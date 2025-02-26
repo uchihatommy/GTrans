@@ -54,6 +54,8 @@ print(args)
 from utils import get_gpu_memory_map
 mem_st = get_gpu_memory_map()
 
+# 数据加载模块（对应论文第4部分Experiment设置）
+# OOD场景数据加载（Cora/OGB-Arxiv等分布偏移数据）
 if args.ood:
     path = 'GraphOOD-EERM/'
     if args.dataset == 'elliptic':
