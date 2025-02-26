@@ -1,3 +1,9 @@
+# Elliptic 时间分布偏移（OOD）实验的数据加载与预处理入口
+# 数据划分：按时间顺序将交易数据分割为训练集（6-10 时段）、验证集（11-15 时段）、测试集（16-48 时段）
+# 数据加载：调用 load_nc_dataset 加载预处理的子图数据
+# 数据标准化：验证节点特征与拓扑结构的完整性
+# 实验控制：通过命令行参数配置数据路径和设备类型
+
 import argparse
 import sys
 import os
@@ -39,6 +45,13 @@ print(args)
 
 device = torch.device("cuda:" + str(args.device)) if torch.cuda.is_available() else torch.device("cpu")
 
+# 数据加载逻辑
+# load_nc_dataset 预期行为：
+# 输入：sub_dataset 参数（如 6 代表第6个时间窗口）
+# 输出：包含以下属性的 PyG Data 对象：
+# edge_index: 边索引（交易关系）
+# node_feat: 节点特征（交易属性）
+# label: 节点类别（非法交易检测标签）
 def get_dataset(dataset, sub_dataset=None):
     ### Load and preprocess data ###
     if dataset == 'elliptic':
@@ -59,9 +72,12 @@ def get_dataset(dataset, sub_dataset=None):
 
     return dataset
 
+# 时间划分策略
 if args.dataset == 'elliptic':
+    # 训练时段（历史数据）、验证时段（近期数据）、测试时段（未来数据，模拟分布偏移）
     tr_subs, val_subs, te_subs = [i for i in range(6, 11)], [i for i in range(11, 16)], [i for i in range(16, 49)]
     # te_subs = [41]
+    # 按时段加载子图
     datasets_tr = [get_dataset(dataset='elliptic', sub_dataset=tr_subs[i]) for i in range(len(tr_subs))]
     datasets_val = [get_dataset(dataset='elliptic', sub_dataset=val_subs[i]) for i in range(len(val_subs))]
     datasets_te = [get_dataset(dataset='elliptic', sub_dataset=te_subs[i]) for i in range(len(te_subs))]
