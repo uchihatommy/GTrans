@@ -1,3 +1,6 @@
+# 1. 超参数配置与数据集适配
+# 2. 数据集加载与预处理
+
 import torch
 import os.path as osp
 from torch_geometric.datasets import Planetoid, PPI, WikiCS, Coauthor, Amazon, CoraFull
@@ -20,7 +23,7 @@ import torch.nn.functional as F
 from sklearn.metrics import roc_auc_score, f1_score
 import subprocess
 
-
+# 统一加载标准数据集（如Cora、Pubmed）并执行特征归一化。
 def get_dataset(name, normalize_features=False, transform=None):
     path = osp.join(osp.dirname(osp.realpath(__file__)), 'data', name)
     if name in ['cora', 'citeseer', 'pubmed']:
